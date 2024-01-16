@@ -9,13 +9,14 @@ mod material;
 mod diffuse;
 mod plane;
 mod image;
+mod triangle;
 
 use camera::Camera;
 use color::Color;
 use material::Material;
 use plane::Plane;
 use sphere::Sphere;
-use util::{gen_random, gen_random_range};
+use triangle::Triangle;
 use vec3::Point3;
 
 use crate::{vec3::Vec3, hittable::HittableVec};
@@ -63,28 +64,33 @@ fn main() {
     //     }
     // }
 
-    let material1 = Material::Glossy { color: Color::new(1.0, 0.0, 0.0), specularity: 0.15, roughness: 0.01 };
+    let material1 = Material::Glossy { color: Color::new(1.0, 1.0, 1.0), specularity: 0.15, roughness: 0.0 };
     // let material1 = Material::Dielectric { ior: 1.5 };
     world.add(Sphere::new(Point3::new(2.0, 1.0, 2.0), 1.0, material1));
 
     // let material2 = Material::Diffuse { color: Color::new(0.4, 0.2, 0.1) };
-    let material2 = Material::Dielectric { ior: 1.0 };
+    let material2 = Material::Dielectric { ior: 1.5 };
 
     // world.add(Sphere::new(Point3::new(0.0, 0.2, 2.0), 0.2, material2));
 
-    world.add(Sphere::new(Point3::new(0.0, 1.0, 2.0), -1.0, material2));
+    // world.add(Sphere::new(Point3::new(0.0, 1.0, 2.0), 1.0, material2));
 
     let material3 = Material::Metal { color: Color::new(0.7, 0.6, 0.5), roughness: 0.2};
     world.add(Sphere::new(Point3::new(-2.0, 1.0, 2.0), 1.0, material3));
 
+    world.add(Triangle::new(Vec3::new(0.0, 1.0, 2.0), Vec3::new(1.0, 1.0, 2.0), Vec3::new(0.0, 2.0, 0.0)));
+
     let mut camera: Camera = Camera::new();
-    camera.image_width = 1920;
-    camera.image_height = 1080;
-    camera.samples = 50;
-    camera.ray_depth = 25;
-    camera.fov = 90.0;
-    camera.look_from = Point3::new(-0.0, 1.0, -1.0);
+    camera.image_width = 400;
+    camera.image_height = 200;
+    camera.samples = 100;
+    camera.ray_depth = 5;
+    camera.fov = 60.0;
+    camera.look_from = Point3::new(0.0, 1.0,10.0);
     camera.look_at = Vec3::new(0.0, 1.0, 1.0);
+
+    // camera.look_from = Point3::new(-0.0, 1.0, 1.0);
+    // camera.look_at = Vec3::new(0.0, 1.0, -1.0);
 
     camera.render(&world);
     camera.output.export(camera.samples);

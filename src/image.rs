@@ -1,4 +1,4 @@
-use image::{ImageBuffer, RgbImage, Rgb};
+use image::{RgbImage, Rgb};
 
 use crate::color::Color;
 

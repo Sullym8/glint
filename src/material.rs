@@ -69,7 +69,6 @@ impl Material {
             }
             Material::Empty => None,
             Material::Dielectric { ior } => {
-                let color = WHITE;
                 let refractive_ratio: f64 = if curr_record.outside_face {1.0/ior} else {*ior};
 
                 let cos = f64::min(Vec3::dot(-ray_in.direction.unit(), curr_record.normal.unit()), 1.0);
@@ -79,15 +78,15 @@ impl Material {
 
                 let mut r0 = (1.0 - refractive_ratio)/(1.0 + refractive_ratio);
                 r0 *= r0;
-                let R = r0 + (1.0 - r0)*f64::powi(1.0 - cos, 5);
+                let reflectance = r0 + (1.0 - r0)*f64::powi(1.0 - cos, 5);
 
-                if refractive_ratio * sin > 1.0 || R > gen_random() {
+                if refractive_ratio * sin > 1.0 || reflectance > gen_random() {
                     scatter_dir = Vec3::reflect(ray_in.direction.unit(), curr_record.normal);
                 } else {
                     scatter_dir = Vec3::refract(ray_in.direction.unit(), curr_record.normal, refractive_ratio);
                 }
 
-                let color = (1.0 - R) * WHITE + R * WHITE;
+                let color = (1.0 - reflectance) * WHITE + reflectance * WHITE;
 
                 let ray_out : Ray = Ray::new(curr_record.point, scatter_dir);
                 Some((color, ray_out))
