@@ -27,6 +27,12 @@ impl Vec3 {
         }
     }
 
+    pub fn newf32(x: f32, y: f32, z: f32) -> Vec3 {
+        Vec3 {
+            v: [x as f64,y as f64,z as f64]
+        }
+    }
+
     pub fn default() -> Vec3 {
         Vec3 {
             v: [0.0,0.0,0.0]
