@@ -12,5 +12,5 @@
 
 ![output](https://github.com/Sullym8/glint/assets/48613444/4b3fb86f-9deb-43f4-91a9-7f55163a7e5f)
 
-![Uploading output.png…]()
+![output](https://github.com/Sullym8/glint/assets/48613444/a26a48be-85b3-4794-8e00-eaa57a7cc47f)
 
