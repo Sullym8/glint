@@ -28,61 +28,63 @@ fn main() {
     //World is a list of objects that we want to be raytraced. So far there are spheres :)
     let mut world: HittableVec = HittableVec::new();
 
-    let ground_material = Material::Diffuse { color: Color::new(0.5, 0.5, 0.5)};
+    let ground_material = Material::Glossy { color: Color::new(0.1, 0.1, 0.4), specularity: 0.02, roughness: 0.1 };
     // world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, ground_material));
-    world.add(Plane::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0), ground_material));
-    for a in -11..12{
-        for b in -11..12 {
-            let choose_mat = gen_random();
-            let center = Point3::new(a as f64 + 0.9*gen_random(), 0.2, b as f64 + 0.9*gen_random());
+    world.add(Plane::new(Point3::new(0.0, -0.0, 0.0), Vec3::new(0.0, 1.0, 0.0), ground_material));
+    // for a in -11..12{
+    //     for b in -11..12 {
+    //         let choose_mat = gen_random();
+    //         let center = Point3::new(a as f64 + 0.9*gen_random(), 0.2, b as f64 + 0.9*gen_random());
 
-            if ((center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9) {
-                let sphere_material: Material;
+    //         if ((center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9) {
+    //             let sphere_material: Material;
 
-                if (choose_mat < 0.85) {
-                    // diffuse
-                    let albedo = Vec3::new(gen_random_range(0.0, 1.0), 
-                    gen_random_range(0.0, 1.0), 
-                    gen_random_range(0.0, 1.0));
-                    sphere_material = Material::Glossy { color: albedo, specularity: 0.15, roughness: 0.05 };
-                    world.add(Sphere::new(center, 0.2, sphere_material));
-                } else if (choose_mat < 0.95) {
-                    // metal
-                    let albedo = Vec3::new(gen_random_range(0.5, 1.0), 
-                    gen_random_range(0.5, 1.0), 
-                    gen_random_range(0.5, 1.0));
-                    let fuzz = gen_random_range(0.0, 0.5);
-                    sphere_material = Material::Metal { color: albedo, roughness: fuzz };
-                    world.add(Sphere::new(center, 0.2, sphere_material));
-                } else {
-                    // glass
-                    sphere_material = Material::Dielectric { ior: 1.5 };
-                    world.add(Sphere::new(center, 0.2, sphere_material));
-                }
-            }
-        }
-    }
+    //             if (choose_mat < 0.85) {
+    //                 // diffuse
+    //                 let albedo = Vec3::new(gen_random_range(0.0, 1.0), 
+    //                 gen_random_range(0.0, 1.0), 
+    //                 gen_random_range(0.0, 1.0));
+    //                 sphere_material = Material::Glossy { color: albedo, specularity: 0.1, roughness: 0.05 };
+    //                 world.add(Sphere::new(center, 0.2, sphere_material));
+    //             } else if (choose_mat < 0.95) {
+    //                 // metal
+    //                 let albedo = Vec3::new(gen_random_range(0.5, 1.0), 
+    //                 gen_random_range(0.5, 1.0), 
+    //                 gen_random_range(0.5, 1.0));
+    //                 let fuzz = gen_random_range(0.0, 0.5);
+    //                 sphere_material = Material::Metal { color: albedo, roughness: fuzz };
+    //                 world.add(Sphere::new(center, 0.2, sphere_material));
+    //             } else {
+    //                 // glass
+    //                 sphere_material = Material::Dielectric { ior: 1.5 };
+    //                 world.add(Sphere::new(center, 0.2, sphere_material));
+    //             }
+    //         }
+    //     }
+    // }
 
-    let material1 = Material::Glossy { color: Color::new(1.0, 0.0, 0.0), specularity: 0.02, roughness: 0.01 };
-    world.add(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, material1));
+    let material1 = Material::Glossy { color: Color::new(1.0, 0.0, 0.0), specularity: 0.15, roughness: 0.01 };
+    // let material1 = Material::Dielectric { ior: 1.5 };
+    world.add(Sphere::new(Point3::new(2.0, 1.0, 2.0), 1.0, material1));
 
-    let material2 = Material::Diffuse { color: Color::new(0.4, 0.2, 0.1) };
+    // let material2 = Material::Diffuse { color: Color::new(0.4, 0.2, 0.1) };
+    let material2 = Material::Dielectric { ior: 1.0 };
 
     // world.add(Sphere::new(Point3::new(0.0, 0.2, 2.0), 0.2, material2));
 
-    world.add(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, material2));
+    world.add(Sphere::new(Point3::new(0.0, 1.0, 2.0), -1.0, material2));
 
-    let material3 = Material::Metal { color: Color::new(0.7, 0.6, 0.5), roughness: 0.0};
-    world.add(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, material3));
+    let material3 = Material::Metal { color: Color::new(0.7, 0.6, 0.5), roughness: 0.2};
+    world.add(Sphere::new(Point3::new(-2.0, 1.0, 2.0), 1.0, material3));
 
     let mut camera: Camera = Camera::new();
-    camera.image_width = 400;
-    camera.image_height = 400;
-    camera.samples = 10;
-    camera.ray_depth = 5;
-    camera.fov = 60.0;
-    camera.look_from = Point3::new(13.0, 2.0, 3.0);
-    camera.look_at = Vec3::new(0.0, 0.0, 0.0);
+    camera.image_width = 1920;
+    camera.image_height = 1080;
+    camera.samples = 50;
+    camera.ray_depth = 25;
+    camera.fov = 90.0;
+    camera.look_from = Point3::new(-0.0, 1.0, -1.0);
+    camera.look_at = Vec3::new(0.0, 1.0, 1.0);
 
     camera.render(&world);
     camera.output.export(camera.samples);

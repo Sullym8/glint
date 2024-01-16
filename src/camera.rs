@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
-use crate::{hittable::{HittableVec, Hittable}, vec3::{Point3, Vec3}, ray::Ray, color::Color, util::gen_random, image::Image};
+use crate::{hittable::{HittableVec, Hittable}, vec3::{Point3, Vec3, WHITE}, ray::Ray, color::Color, util::gen_random, image::Image};
 
 pub struct Camera {
     pub image_width: i32,
@@ -67,19 +67,20 @@ impl Camera {
 
         let mut pixels = vec![Color::default(); (self.image_height * self.image_width) as usize];
 
-        // let rows: Vec<(usize, &mut [Vec3])> = pixels.chunks_mut((1) as usize).enumerate().collect();
-        // let _ = rows.into_par_iter().for_each(|(y, row)| {
-        //     // for x in 0..self.image_width {
-        //         let mut color_accumulate = Color::default();
-        //         for _ in 0..self.samples {
-        //             let ray: Ray = self.get_sample_ray(y as i32 / self.image_height as i32, y as i32 % self.image_width);
-        //             // println!("{:?}", ray);
-        //             color_accumulate = color_accumulate + self.ray_color(&ray, world, self.ray_depth);
-        //         }
-        //         row[0] = color_accumulate;
-        //     // }
-        // });
+        let chunks: Vec<(usize, &mut [Vec3])> = pixels.chunks_mut((1) as usize).enumerate().collect();
+        let _ = chunks.into_par_iter().for_each(|(x, chunk)| {
+            // for x in 0..self.image_width {
+                let mut color_accumulate = Color::default();
+                for _ in 0..self.samples {
+                    let ray: Ray = self.get_sample_ray(x as i32 / self.image_width, x as i32 % self.image_width);
+                    // println!("{:?}", ray);
+                    color_accumulate = color_accumulate + self.ray_color(&ray, world, self.ray_depth);
+                }
+                chunk[0] = color_accumulate;
+            // }
+        });
 
+        
         // let rows: Vec<(usize, &mut [Vec3])> = pixels.chunks_mut((self.image_width) as usize).enumerate().collect();
         // let _ = rows.into_par_iter().for_each(|(y, row)| {
         //     for x in 0..self.image_width {
@@ -89,7 +90,7 @@ impl Camera {
         //             // println!("{:?}", ray);
         //             color_accumulate = color_accumulate + self.ray_color(&ray, world, self.ray_depth);
         //         }
-        //         row[0] = color_accumulate;
+        //         row[x as usize] = color_accumulate;
         //     }
         // });
 
@@ -214,6 +215,7 @@ impl Camera {
                 let a = (unit.y() + 1.0) * 0.5;
                 //lerp between Blue and White to create sky
                 (1.0 - a) * Color::new(1.0,1.0,1.0) + a * Color::new(0.5, 0.7,  1.0)
+
             }
         }
         // Only if an intersection is identified, calculate the color of the object
