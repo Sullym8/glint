@@ -11,3 +11,7 @@
 ![raytracer_glass_2](https://github.com/Sullym8/glint/assets/48613444/0798df25-76ed-4f0a-b66d-9442e264fa4c)
 
 ![output](https://github.com/Sullym8/glint/assets/48613444/4b3fb86f-9deb-43f4-91a9-7f55163a7e5f)
+
+![output](https://github.com/Sullym8/glint/assets/48613444/a26a48be-85b3-4794-8e00-eaa57a7cc47f)
+
+![output](https://github.com/Sullym8/glint/assets/48613444/f8822725-3c9f-42eb-b465-c7c2add56cfb)
