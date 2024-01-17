@@ -15,3 +15,9 @@
 ![output](https://github.com/Sullym8/glint/assets/48613444/a26a48be-85b3-4794-8e00-eaa57a7cc47f)
 
 ![output](https://github.com/Sullym8/glint/assets/48613444/f8822725-3c9f-42eb-b465-c7c2add56cfb)
+
+![glint](https://github.com/Sullym8/glint/assets/48613444/6bd6fbd5-fe4c-4ad7-a353-2cdc7733457c)
+
+![light](https://github.com/Sullym8/glint/assets/48613444/00f5d41a-978d-47ee-83fe-9bbd3aca50e2)
+
+![output](https://github.com/Sullym8/glint/assets/48613444/d0868589-418f-4c79-bc89-ab8651cab03c)
