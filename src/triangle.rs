@@ -1,4 +1,4 @@
-use crate::{vec3::{Vec3, Point3}, material::Material, hittable::{Hittable, Record}, color::Color};
+use crate::{vec3::{Vec3, Point3, WHITE, BLACK}, material::Material, hittable::{Hittable, Record}, color::Color};
 
 pub struct Triangle {
     p1: Point3,
@@ -19,7 +19,10 @@ impl Triangle {
         // println!("{:?} {:?} {:?}", e1, e2, normal);
         Triangle {
             p1, p2, p3, e1, e2, normal, 
-            material : Material::Metal { color: Color::new(0.5, 0.5, 0.5), roughness: 0.0 }
+            material: Material::Dielectric { color: Color::new(0.8, 0.9, 1.0), ior: 1.5 }
+            // material: Material::UV
+            // material : Material::Metal { color: Color::new(0.5, 0.5, 0.5), roughness: 0.0 }
+            // material: Material::Glossy { color: Color::new(1.0, 0.0, 0.0), specularity: 0.0, roughness: 0.1 }
         }
     }
 }

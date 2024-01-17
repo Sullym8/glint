@@ -1,6 +1,7 @@
 use std::time::Instant;
 
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use tobj::Material;
 
 use crate::{hittable::{HittableVec, Hittable}, vec3::{Point3, Vec3, WHITE}, ray::Ray, color::Color, util::gen_random, image::Image};
 
@@ -207,10 +208,13 @@ impl Camera {
                     Some((color, scattered_ray)) => {
                         return color * self.ray_color(&scattered_ray, world, curr_depth - 1)
                     }
-                    None => Color::default(),
+                    None => {
+                        x.material.emit()
+                    }
                 }
             },
             None => {
+                return Color::default();
                 let unit: Vec3 = r.direction().unit();
                 let a = (unit.y() + 1.0) * 0.5;
                 //lerp between Blue and White to create sky

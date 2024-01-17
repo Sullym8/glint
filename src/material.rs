@@ -1,3 +1,4 @@
+#![allow(unused)]
 use crate::{hittable::Record, color::Color, ray::Ray, vec3::{Vec3, WHITE, BLACK}, util::gen_random};
 
 #[derive(Debug, Clone, Copy)]
@@ -10,6 +11,7 @@ pub enum Material {
         roughness: f64,
     },
     Dielectric {
+        color: Color,
         ior: f64
     },
     Glossy {
@@ -17,12 +19,28 @@ pub enum Material {
         specularity:f64,
         roughness: f64
     },
+    Emission {
+        color: Color,
+        strength: f64,
+    },
     UV,
     Stripes,
     Empty,
 }
 
 impl Material {
+
+    pub fn emit(&self) -> Color {
+        match self {
+            Material::Emission { color, strength } => {
+                // println!("Emit");
+                *color * *strength
+            }
+            _ => Color::default()
+        }
+
+    }
+
     pub fn scatter(&self, ray_in: &Ray, curr_record: &Record) -> Option<(Color, Ray)> {
         match self {
             Material::Diffuse { color } => {
@@ -68,7 +86,7 @@ impl Material {
                 Some((f, Ray::new(curr_record.point, curr_record.normal)))
             }
             Material::Empty => None,
-            Material::Dielectric { ior } => {
+            Material::Dielectric { ior, color } => {
                 let refractive_ratio: f64 = if curr_record.outside_face {1.0/ior} else {*ior};
 
                 let cos = f64::min(Vec3::dot(-ray_in.direction.unit(), curr_record.normal.unit()), 1.0);
@@ -86,10 +104,10 @@ impl Material {
                     scatter_dir = Vec3::refract(ray_in.direction.unit(), curr_record.normal, refractive_ratio);
                 }
 
-                let color = (1.0 - reflectance) * WHITE + reflectance * WHITE;
+                let out = (1.0 - reflectance) * (*color) + reflectance * WHITE;
 
                 let ray_out : Ray = Ray::new(curr_record.point, scatter_dir);
-                Some((color, ray_out))
+                Some((out, ray_out))
             },
             Material::Glossy { specularity, roughness, color } => {
 
@@ -111,6 +129,9 @@ impl Material {
 
                 Some((color_out, ray_out))
 
+            }
+            Material::Emission { color, strength } => {
+                None
             }
         }
     }

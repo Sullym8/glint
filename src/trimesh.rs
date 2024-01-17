@@ -8,7 +8,7 @@ pub struct TriMesh {
 
 impl TriMesh {
     pub fn new() -> TriMesh{
-        let obj = tobj::load_obj("suzzane.obj", &GPU_LOAD_OPTIONS);
+        let obj = tobj::load_obj("glint.obj", &GPU_LOAD_OPTIONS);
         let (models, _) = obj.unwrap();
 
         let mut triangles: Vec<Triangle> = Vec::new();

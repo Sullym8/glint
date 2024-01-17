@@ -19,7 +19,7 @@ use plane::Plane;
 use sphere::Sphere;
 use triangle::Triangle;
 use trimesh::TriMesh;
-use vec3::Point3;
+use vec3::{Point3, WHITE, BLACK};
 
 use crate::{vec3::Vec3, hittable::HittableVec};
 
@@ -31,7 +31,7 @@ fn main() {
     //World is a list of objects that we want to be raytraced. So far there are spheres :)
     let mut world: HittableVec = HittableVec::new();
 
-    let ground_material = Material::Glossy { color: Color::new(0.1, 0.1, 0.4), specularity: 0.02, roughness: 0.1 };
+    let ground_material = Material::Metal { color: Color::new(0.3, 0.3, 0.3), roughness: 0.2 };
     // world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, ground_material));
     world.add(Plane::new(Point3::new(0.0, -1.0, 0.0), Vec3::new(0.0, 1.0, 0.0), ground_material));
     // for a in -11..12{
@@ -71,9 +71,9 @@ fn main() {
         world.add(t);
     }
 
-    // let material1 = Material::Glossy { color: Color::new(1.0, 1.0, 1.0), specularity: 0.15, roughness: 0.0 };
+    let material1 = Material::Glossy { color: Color::new(1.0, 0.0, 0.0), specularity: 0.02, roughness: 0.0 };
     // let material1 = Material::Dielectric { ior: 1.5 };
-    // world.add(Sphere::new(Point3::new(2.0, 1.0, 2.0), 1.0, material1));
+    // world.add(Sphere::new(Point3::new(2.5, 1.0, 2.0), 1.0, material1));
 
     // let material2 = Material::Diffuse { color: Color::new(0.4, 0.2, 0.1) };
     // let material2 = Material::Dielectric { ior: 1.5 };
@@ -82,19 +82,20 @@ fn main() {
 
     // world.add(Sphere::new(Point3::new(0.0, 1.0, 2.0), 1.0, material2));
 
-    // let material3 = Material::Metal { color: Color::new(0.7, 0.6, 0.5), roughness: 0.2};
-    // world.add(Sphere::new(Point3::new(-2.0, 1.0, 2.0), 1.0, material3));
+    // let material3 = Material::Metal { color: Color::new(0.7, 0.6, 0.5), roughness: 0.0};
+    let material3 = Material::Emission { color: Color(0.0, 1.0, 0.0), strength: 1.0};
+    world.add(Sphere::new(Point3::new(0.0, 0.0, -2.0), 1.0, material3));
 
     // world.add(Triangle::new(Vec3::new(0.0, 1.0, 2.0), Vec3::new(1.0, 1.0, 2.0), Vec3::new(0.0, 2.0, 0.0)));
 
     let mut camera: Camera = Camera::new();
-    camera.image_width = 1920;
-    camera.image_height = 1080;
-    camera.samples = 100;
-    camera.ray_depth = 50;
-    camera.fov = 50.0;
-    camera.look_from = Point3::new(0.0, 1.0,10.0);
-    camera.look_at = Vec3::new(0.0, 1.0, 1.0);
+    camera.image_width = 400;
+    camera.image_height = 200;
+    camera.samples = 55;
+    camera.ray_depth = 10;
+    camera.fov = 20.0;
+    camera.look_from = Point3::new(0.0, 0.0,10.0);
+    camera.look_at = Vec3::new(0.0, 0.0, 1.0);
 
     // camera.look_from = Point3::new(-0.0, 1.0, 1.0);
     // camera.look_at = Vec3::new(0.0, 1.0, -1.0);
