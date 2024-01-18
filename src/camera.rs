@@ -68,32 +68,32 @@ impl Camera {
 
         let mut pixels = vec![Color::default(); (self.image_height * self.image_width) as usize];
 
-        let chunks: Vec<(usize, &mut [Vec3])> = pixels.chunks_mut((1) as usize).enumerate().collect();
-        let _ = chunks.into_par_iter().for_each(|(x, chunk)| {
-            // for x in 0..self.image_width {
-                let mut color_accumulate = Color::default();
-                for _ in 0..self.samples {
-                    let ray: Ray = self.get_sample_ray(x as i32 / self.image_width, x as i32 % self.image_width);
-                    // println!("{:?}", ray);
-                    color_accumulate = color_accumulate + self.ray_color(&ray, world, self.ray_depth);
-                }
-                chunk[0] = color_accumulate;
-            // }
-        });
-
-        
-        // let rows: Vec<(usize, &mut [Vec3])> = pixels.chunks_mut((self.image_width) as usize).enumerate().collect();
-        // let _ = rows.into_par_iter().for_each(|(y, row)| {
-        //     for x in 0..self.image_width {
+        // let chunks: Vec<(usize, &mut [Vec3])> = pixels.chunks_mut((1) as usize).enumerate().collect();
+        // let _ = chunks.into_par_iter().for_each(|(x, chunk)| {
+        //     // for x in 0..self.image_width {
         //         let mut color_accumulate = Color::default();
         //         for _ in 0..self.samples {
-        //             let ray: Ray = self.get_sample_ray(y as i32, x);
+        //             let ray: Ray = self.get_sample_ray(x as i32 / self.image_width, x as i32 % self.image_width);
         //             // println!("{:?}", ray);
         //             color_accumulate = color_accumulate + self.ray_color(&ray, world, self.ray_depth);
         //         }
-        //         row[x as usize] = color_accumulate;
-        //     }
+        //         chunk[0] = color_accumulate;
+        //     // }
         // });
+
+        
+        let rows: Vec<(usize, &mut [Vec3])> = pixels.chunks_mut((self.image_width) as usize).enumerate().collect();
+        let _ = rows.into_par_iter().for_each(|(y, row)| {
+            for x in 0..self.image_width {
+                let mut color_accumulate = Color::default();
+                for _ in 0..self.samples {
+                    let ray: Ray = self.get_sample_ray(y as i32, x);
+                    // println!("{y} {x} {:?}", ray);
+                    color_accumulate = color_accumulate + self.ray_color(&ray, world, self.ray_depth);
+                }
+                row[x as usize] = color_accumulate;
+            }
+        });
 
         self.output = Image::new(self.image_width as u32, self.image_height as u32, pixels);
 
@@ -147,7 +147,7 @@ impl Camera {
 
     fn get_sample_ray(&self, i: i32, j: i32) -> Ray {
         let pixel_vec = self.upper_left_pixel + (i as f64 * self.del_h) + (j as f64 * self.del_w);
-        let pixel_sample = pixel_vec + self.del_h * gen_random() * 0.5 + self.del_w * 0.5 * gen_random();
+        let pixel_sample = pixel_vec + self.del_h * (gen_random() - 0.5) + self.del_w * (gen_random() - 0.5);
 
         Ray::new(self.camera_center, pixel_sample - self.camera_center)
     }
@@ -156,7 +156,7 @@ impl Camera {
 
         //internal viewport used to translate between image pixels and ray.
         //Vieport is a rectangular box with the image aspect ratio placed 1 unit away from the origin
-        let focal_length = 1.0;
+        let focal_length = (self.look_from-self.look_at).length();
         let h = f64::tan(f64::to_radians(self.fov * 0.5));
 
         let viewport_width: f64 = 2.0 * focal_length * h;

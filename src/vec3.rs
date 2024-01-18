@@ -8,16 +8,26 @@ use crate::util::gen_random_range;
 //used to simplify dev, may remove
 #[derive(Clone, Copy, Debug)]
 pub struct Vec3 {
-    v: [f64; 3]
+    pub v: [f64; 3]
 }
 
 pub const WHITE: Vec3 = Vec3 {
-    v: [1.0,1.0, 1.0]
+    v: [1.0;3]
 };
 
 pub const BLACK: Vec3 = Vec3 {
-    v: [0.0,0.0,0.0]
+    v: [0.0;3]
 };
+
+pub const MIN: Vec3 = Vec3 {
+    v:[f64::NEG_INFINITY;3]
+};
+
+pub const MAX: Vec3 = Vec3 {
+    v:[f64::INFINITY;3]
+};
+
+
 
 impl Vec3 {
     //constructor

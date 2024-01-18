@@ -12,7 +12,7 @@ pub struct Record{
 }
 
 pub struct HittableVec {
-    list: Vec<Box<dyn Hittable + Send + Sync>>
+    list: Vec<Box<dyn Hittable + Send + Sync>>,
 }
 
 impl HittableVec {
@@ -22,6 +22,7 @@ impl HittableVec {
 
     pub fn add(&mut self, hittable: impl Hittable + 'static + Send + Sync) -> () {
         self.list.push(Box::new(hittable));
+
     }
 
     // pub fn clear(&mut self) -> () {
@@ -77,4 +78,5 @@ impl Record{
 // Takes in self, ray, a range of valid t, and a record object which it writes to -> bool
 pub trait Hittable {
     fn ray_hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Record>;
+
 }

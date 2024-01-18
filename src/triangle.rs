@@ -1,5 +1,6 @@
-use crate::{vec3::{Vec3, Point3, WHITE, BLACK}, material::Material, hittable::{Hittable, Record}, color::Color};
+use crate::{vec3::{Vec3, Point3, WHITE, BLACK}, material::Material, hittable::{Hittable, Record}, color::Color, aabb::AABB};
 
+#[derive(Clone, Copy)]
 pub struct Triangle {
     p1: Point3,
     p2: Point3,
@@ -7,7 +8,8 @@ pub struct Triangle {
     e1: Vec3,
     e2: Vec3,
     normal: Vec3,
-    material: Material
+    material: Material,
+    pub bounds: AABB,
 }
 
 impl Triangle {
@@ -15,20 +17,31 @@ impl Triangle {
         let e1 = p2 - p1;
         let e2 = p3 - p1;
         let normal = Vec3::cross(e1, e2);
+        let mut bounds = AABB::default();
+        bounds.add(p1);
+        bounds.add(p2);
+        bounds.add(p3);
 
         // println!("{:?} {:?} {:?}", e1, e2, normal);
+        // println!("{:?}", bounds);
         Triangle {
-            p1, p2, p3, e1, e2, normal, 
-            material: Material::Dielectric { color: Color::new(0.8, 0.9, 1.0), ior: 1.5 }
+            p1, p2, p3, e1, e2, normal, bounds,
+            // material: Material::Empty,
+            // material: Material::Dielectric { color: Color::new(0.8, 0.9, 1.0), ior: 1.5 },
             // material: Material::UV
+            // material: Material::Diffuse { color: WHITE }
             // material : Material::Metal { color: Color::new(0.5, 0.5, 0.5), roughness: 0.0 }
-            // material: Material::Glossy { color: Color::new(1.0, 0.0, 0.0), specularity: 0.0, roughness: 0.1 }
+            material: Material::Glossy { color: BLACK, specularity: 0.0, roughness: 0.1 }
         }
     }
 }
 
 impl Hittable for Triangle {
     fn ray_hit(&self, ray: &crate::ray::Ray, t_min: f64, t_max: f64) -> Option<crate::hittable::Record> {
+
+        if !self.bounds.hit(ray) {
+            return None;
+        }
 
 
         let v_dot_n = Vec3::dot(ray.direction(), self.normal);

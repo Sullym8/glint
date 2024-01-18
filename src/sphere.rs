@@ -1,20 +1,30 @@
-use crate::{hittable::{ Record, Hittable}, vec3::Vec3, material::Material};
+use crate::{hittable::{ Record, Hittable}, vec3::{Vec3, Point3}, material::Material, aabb::AABB};
 
 #[derive(Debug)]
 pub struct Sphere {
     center: Vec3,
     radius: f64,
-    material: Material
+    material: Material,
+    pub bounds: AABB
 }
 
 impl Sphere {
     pub fn new(center: Vec3, radius:f64, material: Material) -> Sphere {
-        Sphere {center, radius, material}
+        let min : Point3 = Point3::new(center.x() - radius, center.y() - radius, center.z() - radius);
+        let max : Point3 = Point3::new(center.x() + radius, center.y() + radius, center.z() + radius);
+
+        let bounds = AABB::new(min, max);
+        Sphere {center, radius, material, bounds}
     }
 }
 
 impl Hittable for Sphere {
     fn ray_hit(&self, ray: &crate::ray::Ray, t_min: f64, t_max: f64) -> Option<Record> {
+
+        if !self.bounds.hit(ray) {
+            return None;
+        }
+
         let oc: Vec3 = ray.origin() - self.center;
         let a = Vec3::dot(ray.direction(), ray.direction());
         let b = Vec3::dot(2.0 * ray.direction(), oc);

@@ -1,9 +1,4 @@
 /target
 output.png
 output.ppm
-suzzane.obj
-teapot.obj
-cube.obj
-glint.obj
-lowpoly.obj
-stormtrooper.obj
+*.obj
