@@ -21,3 +21,6 @@
 ![light](https://github.com/Sullym8/glint/assets/48613444/00f5d41a-978d-47ee-83fe-9bbd3aca50e2)
 
 ![output](https://github.com/Sullym8/glint/assets/48613444/d0868589-418f-4c79-bc89-ab8651cab03c)
+
+![output](https://github.com/Sullym8/glint/assets/48613444/be8a5595-c658-4c8a-b661-1d37e753a3ad)
+
