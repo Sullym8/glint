@@ -1,6 +1,6 @@
-use tobj::{OFFLINE_RENDERING_LOAD_OPTIONS, LoadOptions, GPU_LOAD_OPTIONS};
+use tobj::GPU_LOAD_OPTIONS;
 
-use crate::{vec3::{Point3, Vec3}, triangle::{Triangle, self}, aabb::AABB, hittable::{Hittable, Record}};
+use crate::{vec3::Vec3, triangle::Triangle, aabb::AABB, hittable::{Hittable, Record}};
 
 pub struct TriMesh {
     pub triangles: Vec<Triangle>,
@@ -37,7 +37,7 @@ impl TriMesh {
                     Vec3::newf32(p3[0], p3[1], p3[2])
                 );
                 triangles.push(t);
-                bounds.join(t.bounds);
+                bounds.join(&t.bounds);
                 // println!("{:?}", bounds);
             }
         }
@@ -78,5 +78,9 @@ impl Hittable for TriMesh {
             // }
         }
         None
+    }
+
+    fn bounds(&self) -> &AABB {
+        &self.bounds
     }
 }

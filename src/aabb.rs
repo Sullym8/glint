@@ -25,7 +25,7 @@ impl AABB {
         self.max.v[2] = if point.z() > self.max.v[2] {point.z()} else {self.max.v[2]};
     }
 
-    pub fn join(&mut self, existing: AABB) {
+    pub fn join(&mut self, existing: &AABB) {
         self.add(existing.min);
         self.add(existing.max);
     }

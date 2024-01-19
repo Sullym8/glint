@@ -23,7 +23,7 @@ use trimesh::TriMesh;
 use util::{gen_random, gen_random_range};
 use vec3::{Point3, WHITE, BLACK};
 
-use crate::{vec3::Vec3, hittable::HittableVec};
+use crate::{vec3::Vec3, hittable::{HittableVec, Hittable}};
 
 // where the raytracing magic happens
 
@@ -36,39 +36,39 @@ fn main() {
     // let material3 = Material::Emission { color: Color::new(0.98, 0.75, 0.24), strength: 10.0};
 
     let ground_material = Material::Diffuse { color: Color::new(0.98, 0.75, 0.24)};
-    // world.add(Sphere::new(Point3::new(0.0, -100.0, 0.0), 100.0, material3));
-    world.add(Plane::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0), ground_material));
-    // for a in -11..12{
-    //     for b in -11..12 {
-    //         let choose_mat = gen_random();
-    //         let center = Point3::new(a as f64 + 0.9*gen_random(), 0.2, b as f64 + 0.9*gen_random());
+    world.add(Sphere::new(Point3::new(0.0, -100.0, 0.0), 100.0, ground_material));
+    // world.add(Plane::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0), ground_material));
+    for a in -11..12{
+        for b in -11..12 {
+            let choose_mat = gen_random();
+            let center = Point3::new(a as f64 + 0.9*gen_random(), 0.2, b as f64 + 0.9*gen_random());
 
-    //         if ((center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9) {
-    //             let sphere_material: Material;
+            if ((center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9) {
+                let sphere_material: Material;
 
-    //             if (choose_mat < 0.85) {
-    //                 // diffuse
-    //                 let albedo = Vec3::new(gen_random_range(0.0, 1.0), 
-    //                 gen_random_range(0.0, 1.0), 
-    //                 gen_random_range(0.0, 1.0));
-    //                 sphere_material = Material::Glossy { color: albedo, specularity: 0.1, roughness: 0.05 };
-    //                 world.add(Sphere::new(center, 0.2, sphere_material));
-    //             } else if (choose_mat < 0.95) {
-    //                 // metal
-    //                 let albedo = Vec3::new(gen_random_range(0.5, 1.0), 
-    //                 gen_random_range(0.5, 1.0), 
-    //                 gen_random_range(0.5, 1.0));
-    //                 let fuzz = gen_random_range(0.0, 0.5);
-    //                 sphere_material = Material::Metal { color: albedo, roughness: fuzz };
-    //                 world.add(Sphere::new(center, 0.2, sphere_material));
-    //             } else {
-    //                 // glass
-    //                 sphere_material = Material::Dielectric { ior: 1.5, color: WHITE };
-    //                 world.add(Sphere::new(center, 0.2, sphere_material));
-    //             }
-    //         }
-    //     }
-    // }
+                if (choose_mat < 0.85) {
+                    // diffuse
+                    let albedo = Vec3::new(gen_random_range(0.0, 1.0), 
+                    gen_random_range(0.0, 1.0), 
+                    gen_random_range(0.0, 1.0));
+                    sphere_material = Material::Glossy { color: albedo, specularity: 0.1, roughness: 0.05 };
+                    world.add(Sphere::new(center, 0.2, sphere_material));
+                } else if (choose_mat < 0.95) {
+                    // metal
+                    let albedo = Vec3::new(gen_random_range(0.5, 1.0), 
+                    gen_random_range(0.5, 1.0), 
+                    gen_random_range(0.5, 1.0));
+                    let fuzz = gen_random_range(0.0, 0.5);
+                    sphere_material = Material::Metal { color: albedo, roughness: fuzz };
+                    world.add(Sphere::new(center, 0.2, sphere_material));
+                } else {
+                    // glass
+                    sphere_material = Material::Dielectric { ior: 1.5, color: WHITE };
+                    world.add(Sphere::new(center, 0.2, sphere_material));
+                }
+            }
+        }
+    }
     
 
     // let m = TriMesh::new();
@@ -100,20 +100,25 @@ fn main() {
     // world.add(Sphere::new(Point3::new(0.0, 110.0, 0.0), 100.0, e));
 
 
+
     // world.add(Triangle::new(Vec3::new(0.0, 1.0, 2.0), Vec3::new(5.0, 1.0, 2.0), Vec3::new(0.0, 5.0, 2.0)));
 
     let mut camera: Camera = Camera::new();
     camera.image_width = 1280;
     camera.image_height = 720;
-    camera.samples = 50;
+    camera.samples = 100;
     camera.ray_depth = 5;
-    camera.fov = 50.0;
+    camera.fov = 40.0;
     camera.look_from = Point3::new(0.0, 5.0,10.0);
     camera.look_at = Vec3::new(0.0, 1.0, 0.0);
 
     // camera.look_from = Point3::new(-0.0, 1.0, 1.0);
     // camera.look_at = Vec3::new(0.0, 1.0, -1.0);
 
+    println!("World: {:?}", world.bounds());
+    for obj in &world.list {
+        println!("Obj: {:?}", obj.bounds());
+    }
     camera.render(&world);
     camera.output.export(camera.samples);
 

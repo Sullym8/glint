@@ -1,14 +1,15 @@
-use crate::{vec3::{Point3, Vec3}, material::Material, hittable::{Hittable, Record}, ray::Ray};
+use crate::{vec3::{Point3, Vec3}, material::Material, hittable::{Hittable, Record}, ray::Ray, aabb::AABB};
 
 pub struct Plane {
     point: Point3,
     normal: Vec3,
-    material: Material
+    material: Material,
+    bounds: AABB
 }
 
 impl Plane {
     pub fn new(point: Point3, normal: Vec3, material: Material) -> Self {
-        Plane {point, normal, material}
+        Plane {point, normal, material, bounds: AABB::default()}
     }
 }
 
@@ -36,5 +37,9 @@ impl Hittable for Plane {
         return_record.calculate_normal(ray, self.normal.unit());
         // eprintln!("{:?}", return_record);/
         return Some(return_record)
+    }
+
+    fn bounds(&self) -> &crate::aabb::AABB {
+        &self.bounds
     }
 }

@@ -52,4 +52,8 @@ impl Hittable for Sphere {
             return Some(return_record);
         }
     }
+
+    fn bounds(&self) -> &AABB {
+        &self.bounds
+    }
 }

@@ -1,4 +1,4 @@
-use crate::{vec3::{Vec3, Point3, WHITE, BLACK}, material::Material, hittable::{Hittable, Record}, color::Color, aabb::AABB};
+use crate::{vec3::{Vec3, Point3, BLACK}, material::Material, hittable::{Hittable, Record}, aabb::AABB};
 
 #[derive(Clone, Copy)]
 pub struct Triangle {
@@ -96,5 +96,9 @@ impl Hittable for Triangle {
         return_record.calculate_normal(ray, self.normal.unit());
         // println!("{:?}", return_record);
         return Some(return_record)
+    }
+
+    fn bounds(&self) -> &AABB {
+        &self.bounds
     }
 }
