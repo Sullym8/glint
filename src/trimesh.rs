@@ -1,16 +1,16 @@
 use tobj::GPU_LOAD_OPTIONS;
 
-use crate::{vec3::Vec3, triangle::Triangle, aabb::AABB, hittable::{Hittable, Record}};
+use crate::{vec3::Vec3, triangle::Triangle, aabb::{AABB, self}, hittable::{Hittable, Record}};
 
 pub struct TriMesh {
     pub triangles: Vec<Triangle>,
-    pub bounds: AABB,
+    bounds: AABB
 }
 
 impl TriMesh {
-    pub fn new() -> TriMesh{
-        let mut bounds = AABB::default();
-        let obj = tobj::load_obj("stormtrooper.obj", &GPU_LOAD_OPTIONS);
+    pub fn new(file_name: &str) -> TriMesh{
+        // let mut bounds = AABB::default();
+        let obj = tobj::load_obj(file_name, &GPU_LOAD_OPTIONS);
         let (models, _) = obj.unwrap();
 
         let mut triangles: Vec<Triangle> = Vec::new();
@@ -28,23 +28,19 @@ impl TriMesh {
 
                 // println!("{:?} {:?} {:?}", p1, p2, p3);
 
-
-
-
                 let t = Triangle::new(
                     Vec3::newf32(p1[0], p1[1], p1[2]), 
                     Vec3::newf32(p2[0], p2[1], p2[2]), 
                     Vec3::newf32(p3[0], p3[1], p3[2])
                 );
                 triangles.push(t);
-                bounds.join(&t.bounds);
                 // println!("{:?}", bounds);
             }
         }
 
         TriMesh{
             triangles,
-            bounds
+            bounds: AABB::default()
         }
     }
 
@@ -52,7 +48,7 @@ impl TriMesh {
 
 impl Hittable for TriMesh {
     fn ray_hit(&self, ray: &crate::ray::Ray, t_min: f64, t_max: f64) -> Option<crate::hittable::Record> {
-        if self.bounds.hit(ray) {
+        // if self.bounds.hit(ray) {
             let mut curr_record: Record = Record::new();
             let mut curr_hit: bool = false;
             let mut curr_closest: f64 = t_max;
@@ -68,7 +64,7 @@ impl Hittable for TriMesh {
                     None => {}
                 }
             }
-            return if curr_hit {Some(curr_record)} else {None}
+            return if curr_hit {Some(curr_record)} else {None};
 
 
             // for triangle in &self.triangles {
@@ -76,11 +72,15 @@ impl Hittable for TriMesh {
             //         return triangle.ray_hit(ray, t_min, t_max)
             //     }
             // }
-        }
+        // }
         None
     }
 
     fn bounds(&self) -> &AABB {
         &self.bounds
+    }
+
+    fn centroid(&self) -> Vec3 {
+        Vec3::default()
     }
 }

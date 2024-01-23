@@ -42,4 +42,8 @@ impl Hittable for Plane {
     fn bounds(&self) -> &crate::aabb::AABB {
         &self.bounds
     }
+
+    fn centroid(&self) -> Vec3 {
+        Vec3::default()
+    }
 }

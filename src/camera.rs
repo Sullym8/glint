@@ -3,7 +3,7 @@ use std::time::Instant;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use tobj::Material;
 
-use crate::{hittable::{HittableVec, Hittable}, vec3::{Point3, Vec3, WHITE}, ray::Ray, color::Color, util::gen_random, image::Image};
+use crate::{hittable::{HittableVec, Hittable}, vec3::{Point3, Vec3, WHITE}, ray::Ray, color::Color, util::gen_random, image::Image, hittable2::Primitive, bvh::BVHNode};
 
 pub struct Camera {
     pub image_width: i32,
@@ -42,7 +42,7 @@ impl Camera {
     }
 
 
-    pub fn render(&mut self, world: &HittableVec) {
+    pub fn render(&mut self, world: &HittableVec, bvh: &BVHNode, primitives: &Vec<Primitive>) {
         self.init();
 
         let CHUNK_SIZE:usize = 1;
@@ -86,12 +86,16 @@ impl Camera {
         let _ = rows.into_par_iter().for_each(|(y, row)| {
             for x in 0..self.image_width {
                 let mut color_accumulate = Color::default();
+                let mut color_accumulate2 = Color::default();
+
                 for _ in 0..self.samples {
                     let ray: Ray = self.get_sample_ray(y as i32, x);
                     // println!("{y} {x} {:?}", ray);
-                    color_accumulate = color_accumulate + self.ray_color(&ray, world, self.ray_depth);
+                    // color_accumulate = color_accumulate + self.ray_color(&ray, world, self.ray_depth);
+                    color_accumulate2 = color_accumulate2 + self.ray_color2(&ray, bvh, primitives, self.ray_depth);
+
                 }
-                row[x as usize] = color_accumulate;
+                row[x as usize] = color_accumulate2;
             }
         });
 
@@ -207,6 +211,69 @@ impl Camera {
                 match res {
                     Some((color, scattered_ray)) => {
                         return color * self.ray_color(&scattered_ray, world, curr_depth - 1)
+                    }
+                    None => {
+                        x.material.emit()
+                    }
+                }
+            },
+            None => {
+                // return Color::default();
+                let unit: Vec3 = r.direction().unit();
+                let a = (unit.y() + 1.0) * 0.5;
+                //lerp between Blue and White to create sky
+                (1.0 - a) * Color::new(1.0,1.0,1.0) + a * Color::new(0.5, 0.7,  1.0)
+
+            }
+        }
+        // Only if an intersection is identified, calculate the color of the object
+        // if intersect {
+        //     let scatter: bool;
+        //     let color: Color;
+        //     let scattered_ray: Ray;
+
+        //     (scatter, color, scattered_ray) = intersection_record.material.scatter(r, &intersection_record);
+
+        //     if scatter {
+        //         return color * self.ray_color(&scattered_ray, world, curr_depth - 1);
+        //     } else {
+        //         return color;
+        //     }
+
+            // return Color::default();
+
+
+            // let record:Record = res.1;
+            // let random_dir = Vec3::vec_in_unit_hemisphere(record.normal) + record.normal;
+            // let ray_bounce = Ray::new(record.point, random_dir);
+            // eprintln!("About to fire bounce");
+
+            // Color based on the normal vector at the point of intersection.
+            // [-1,1] -> [0,1] transformation for x,y,z coordinates
+            // return (Color::new(record.normal.x(), record.normal.y(), record.normal.z()) + Vec3::new(1.0, 1.0, 1.0)) * 0.5;
+        // }
+    
+        //Background color gradient, uses the y component of the ray to create a vertical gradient
+        
+    }
+
+    fn ray_color2(&self,r: &Ray, bvh: &BVHNode, primitives: &Vec<Primitive>, curr_depth: i32) -> Color {
+
+        if curr_depth <= 0 {
+            return Color::default();
+        } 
+
+        // runs a ray trace to find the closest intersection for a given ray. Returns a bool and the Record of the intersection
+        let res = bvh.ray_hit(primitives, r, 0.001, f64::INFINITY);
+        // .ray_hit(r, 0.001, f64::INFINITY);
+        // eprintln!("{:?}", res);
+
+        match res {            
+            Some(x) => {
+                let res = x.material.scatter(r, &x);
+                match res {
+                    Some((color, scattered_ray)) => {
+                        return color * self.ray_color2(&scattered_ray, bvh, primitives, curr_depth - 1)
                     }
                     None => {
                         x.material.emit()

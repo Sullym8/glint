@@ -16,6 +16,62 @@ pub struct HittableVec {
     bounds: AABB,
 }
 
+// #[derive(Clone, Copy)]
+// pub struct Hittables {
+//     pub list: [Hittable_Enum],
+//     pub bounds: AABB,
+
+// }
+
+// impl Hittables {
+//     pub fn new() -> Self {
+//         Hittables { list: [], bounds: AABB::default()}
+//     }
+
+
+//     pub fn add(&mut self, hittable: Hittable_Enum) {
+//         self.bounds.join(hittable.bounds());
+//         self.list.push(hittable);
+//     }
+
+//     pub fn ray_hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Record> {
+//         // println!("World: {:?}", self.bounds);
+//         if self.bounds.hit(ray) { 
+//             let mut curr_record: Record = Record::new();
+//             let mut curr_hit: bool = false;
+//             let mut curr_closest: f64 = t_max;
+
+//             for object in &self.list {
+//                 // println!("Obj: {:?}", object.bounds());
+//                 let res = object.ray_hit(ray, t_min, curr_closest);
+//                 match res {
+//                     Some(x) => {
+//                         curr_record = x;
+//                         curr_hit = true;
+//                         curr_closest = curr_record.t;
+//                     },
+//                     None => {}
+//                 }
+//             }
+//             return if curr_hit {Some(curr_record)} else {None};
+//         }
+//         None
+//     }
+
+//     pub fn bounds(&self) -> &AABB {
+//         &self.bounds
+//     }
+
+//     pub fn centroid(&self) -> Vec3 {
+//         (self.bounds.min + self.bounds.max) * 0.5
+//     }
+
+//     pub fn length(&self) -> usize {
+//         self.list.len()
+//     }
+// }
+
+
 impl HittableVec {
     pub fn new() -> Self {
         HittableVec { list: Vec::new(), bounds: AABB::default()}
@@ -56,6 +112,10 @@ impl Hittable for HittableVec {
         &self.bounds
     }
 
+    fn centroid(&self) -> Vec3 {
+        (self.bounds.min + self.bounds.max) * 0.5
+    }
+
 }
 
 impl Record{
@@ -86,5 +146,6 @@ impl Record{
 pub trait Hittable {
     fn ray_hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Record>;
     fn bounds(&self) -> &AABB;
+    fn centroid(&self) -> Vec3;
     // fn bounding_box_hit() -> AABB;
 }
