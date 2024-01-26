@@ -2,7 +2,7 @@
 use crate::{ray::Ray, vec3::{Point3, Vec3}, material::Material, aabb::AABB};
 
 //A 'log' of the ray intersections that occured, stores important metadata
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Record{
     pub t: f64,
     pub point: Point3,

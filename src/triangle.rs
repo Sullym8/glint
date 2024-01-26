@@ -1,4 +1,4 @@
-use crate::{vec3::{Vec3, Point3, BLACK, WHITE}, material::Material, hittable::{Hittable, Record}, aabb::AABB, color::Color};
+use crate::{vec3::{Vec3, Point3, BLACK, WHITE}, material::{self, Material}, hittable::{Hittable, Record}, aabb::AABB, color::Color};
 
 #[derive(Clone, Copy)]
 pub struct Triangle {
@@ -13,7 +13,7 @@ pub struct Triangle {
 }
 
 impl Triangle {
-    pub fn new(p1: Point3, p2: Point3, p3: Point3) -> Self{
+    pub fn new(p1: Point3, p2: Point3, p3: Point3, material: Material) -> Self{
         let e1 = p2 - p1;
         let e2 = p3 - p1;
         let normal = Vec3::cross(e1, e2);
@@ -22,17 +22,8 @@ impl Triangle {
         bounds.add(p2);
         bounds.add(p3);
 
-        // println!("{:?} {:?} {:?}", e1, e2, normal);
-        // println!("{:?}", bounds);
         Triangle {
-            p1, p2, p3, e1, e2, normal, bounds,
-            // material: Material::Empty,
-            material: Material::Dielectric { color: Color::new(0.83, 0.92, 0.91), ior: 1.5 },
-            // material: Material::UV
-            // material: Material::Diffuse { color: WHITE }
-            // material : Material::Metal { color: Color::new(1.0, 1.0, 1.0), roughness: 0.0 }
-            // material: Material::Glossy { color: WHITE, specularity: 0.3, roughness: 0.3 }
-            // material: Material::Emission { color: WHITE, strength: 1.5 }
+            p1, p2, p3, e1, e2, normal, bounds, material
         }
     }
 
@@ -50,13 +41,11 @@ impl Triangle {
         }
 
         let d = -Vec3::dot(self.p1, self.normal);
-        // println!("{d}");
 
         let qp: Vec3 = self.p1 - ray.origin();
 
 
         let qp_dot_n = Vec3::dot(qp, self.normal);
-        // let x = Vec3::dot(ray.origin, self.normal) + d;
 
         let t: f64 = qp_dot_n/v_dot_n;
 
@@ -93,7 +82,6 @@ impl Triangle {
         return_record.point = ray.ray_at(t);
         return_record.material = self.material;
         return_record.calculate_normal(ray, self.normal.unit());
-        // println!("{:?}", return_record);
         return Some(return_record)
     }
 
@@ -121,13 +109,11 @@ impl Hittable for Triangle {
         }
 
         let d = -Vec3::dot(self.p1, self.normal);
-        // println!("{d}");
 
         let qp: Vec3 = self.p1 - ray.origin();
 
 
         let qp_dot_n = Vec3::dot(qp, self.normal);
-        // let x = Vec3::dot(ray.origin, self.normal) + d;
 
         let t: f64 = qp_dot_n/v_dot_n;
 
@@ -164,7 +150,6 @@ impl Hittable for Triangle {
         return_record.point = ray.ray_at(t);
         return_record.material = self.material;
         return_record.calculate_normal(ray, self.normal.unit());
-        // println!("{:?}", return_record);
         return Some(return_record)
     }
 

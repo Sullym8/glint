@@ -1,3 +1,4 @@
+
 use crate::{vec3::{Vec3, MAX, MIN}, ray::Ray};
 
 #[derive(Debug, Clone, Copy)]
@@ -31,8 +32,9 @@ impl AABB {
         self.add(existing.max);
     }
 
+
+    #[allow(unused_assignments)]
     pub fn hit(&self, ray: &Ray) -> bool {
-        // println!("{:?}", ray);
         let mut t_min: f64;
         let mut t_max: f64;
 
@@ -48,8 +50,6 @@ impl AABB {
         t_min = t_x_min;
         t_max = t_x_max;
 
-        // println!("X: {t_min} {t_max}");
-
         let t_y_min = f64::min(
             (self.min.y() - ray.origin.y())/ray.direction.y(),
             (self.max.y() - ray.origin.y())/ray.direction.y()
@@ -59,22 +59,17 @@ impl AABB {
             (self.max.y() - ray.origin.y())/ray.direction.y()
         );
 
-        // println!("Y: {t_y_min} {t_y_max}");
-
-
-        if (t_y_max < t_min || t_y_min > t_max) {
+        if t_y_max < t_min || t_y_min > t_max {
             return false;
         }
 
-        if (t_y_min > t_min) {
+        if t_y_min > t_min {
             t_min = t_y_min;
         }
 
-        if (t_y_max < t_max) {
+        if t_y_max < t_max {
             t_max = t_y_max;
         }
-
-        // println!("Y: {t_min} {t_max}");
 
         let t_z_min = f64::min(
             (self.min.z() - ray.origin.z())/ray.direction.z(),
@@ -85,23 +80,17 @@ impl AABB {
             (self.max.z() - ray.origin.z())/ray.direction.z()
         );
 
-        // println!("Z: {t_z_min} {t_z_max}");
-
-
-        if (t_z_max < t_min || t_z_min > t_max) {
+        if t_z_max < t_min || t_z_min > t_max {
             return false;
         }
 
-        if (t_z_min > t_min) {
+        if t_z_min > t_min {
             t_min = t_z_min;
         }
 
-        if (t_z_max < t_max) {
+        if t_z_max < t_max {
             t_max = t_z_max;
         }
-
-        // println!("AABB Hit!");
-
         return true;
     }
 

@@ -6,30 +6,24 @@ mod sphere;
 mod camera;
 mod util;
 mod material;
-mod diffuse;
 mod plane;
 mod image;
 mod triangle;
-mod trimesh;
+mod mesh;
 mod aabb;
 mod bvh;
 mod hittable2;
-// mod hittable2;
-// mod bvh;
 
 use camera::Camera;
 use color::Color;
 use material::Material;
-use plane::Plane;
 use sphere::Sphere;
-use triangle::Triangle;
-use trimesh::TriMesh;
-use util::{gen_random, gen_random_range};
-use vec3::{Point3, WHITE, BLACK};
+use mesh::TriMesh;
+use vec3::{Point3, WHITE};
 
-use crate::{vec3::Vec3, hittable::{HittableVec, Hittable}, bvh::BVHNode, hittable2::Primitive};
+use crate::{vec3::Vec3, hittable::HittableVec, bvh::BVHNode, hittable2::Primitive};
 
-// where the raytracing magic happens
+// where the raytracing appens
 
 fn main() {
 
@@ -37,46 +31,10 @@ fn main() {
     //World is a list of objects that we want to be raytraced. So far there are spheres :)
     let mut world: HittableVec = HittableVec::new();
 
-    // let material3 = Material::Emission { color: Color::new(0.98, 0.75, 0.24), strength: 10.0};
 
     let ground_material = Material::Diffuse { color: Color::new(0.98, 0.75, 0.24)};
-    // world.add(Sphere::new(Point3::new(0.0, -100.0, 0.0), 100.0, ground_material));
-    // world.add(Plane::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0), ground_material));
-    // for a in -11..12{
-    //     for b in -11..12 {
-    //         let choose_mat = gen_random();
-    //         let center = Point3::new(a as f64 + 0.9*gen_random(), 0.2, b as f64 + 0.9*gen_random());
 
-    //         if ((center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9) {
-    //             let sphere_material: Material;
-
-    //             if (choose_mat < 0.85) {
-    //                 // diffuse
-    //                 let albedo = Vec3::new(gen_random_range(0.0, 1.0), 
-    //                 gen_random_range(0.0, 1.0), 
-    //                 gen_random_range(0.0, 1.0));
-    //                 sphere_material = Material::Glossy { color: albedo, specularity: 0.1, roughness: 0.05 };
-    //                 world.add(Sphere::new(center, 0.2, sphere_material));
-    //             } else if (choose_mat < 0.95) {
-    //                 // metal
-    //                 let albedo = Vec3::new(gen_random_range(0.5, 1.0), 
-    //                 gen_random_range(0.5, 1.0), 
-    //                 gen_random_range(0.5, 1.0));
-    //                 let fuzz = gen_random_range(0.0, 0.5);
-    //                 sphere_material = Material::Metal { color: albedo, roughness: fuzz };
-    //                 world.add(Sphere::new(center, 0.2, sphere_material));
-    //             } else {
-    //                 // glass
-    //                 sphere_material = Material::Dielectric { ior: 1.5, color: WHITE };
-    //                 world.add(Sphere::new(center, 0.2, sphere_material));
-    //             }
-    //         }
-    //     }
-    // }
-    
-
-    let m = TriMesh::new("bunny.obj");
-    // world.add(m);
+    let m = TriMesh::new("bunny.obj", Material::Metal { color: WHITE, roughness: 0.5 });
 
     let mut primitives: Vec<Primitive> = vec![];
     let mut i: usize = 0;
@@ -94,17 +52,26 @@ fn main() {
         i += 1;
     }
 
-    // primitives.push(Primitive::Sphere(
-    //     Sphere::new(
-    //         Point3::new(15.0, 0.0, 10.0), 
-    //         5.0, 
-    //         Material::Emission { 
-    //             color: Color::new(1.0, 0.0, 0.0), 
-    //             strength: 2.0 }
-    //     )
-    // ));
-    // indices.push(i);
-    // i+= 1;
+    primitives.push(Primitive::Sphere(
+        Sphere::new(
+            Point3::new(0.0, -999.6, 0.0), 
+            1000.0, 
+            ground_material
+        )
+    ));
+    indices.push(i);
+    i+= 1;
+
+    primitives.push(Primitive::Sphere(
+        Sphere::new(
+            Point3::new(0.0, 120.0, 0.0), 
+            100.0, 
+            Material::Emission { color: WHITE, strength: 1.0 }
+        )
+    ));
+    indices.push(i);
+    i+= 1;
+
 
     // primitives.push(Primitive::Sphere(
     //     Sphere::new(
@@ -120,118 +87,20 @@ fn main() {
 
     let mut bvh = BVHNode::default();
     println!("Building BVH...");
-    bvh = bvh.new(&primitives, &mut indices, 0, i);
+    bvh = bvh.new(&primitives, &mut indices, 0, i, 0);
     println!("BVH Built");
-    // println!("{:?}", bvh);
-
-    // let material1 = Material::Glossy { color: Color::new(0.98, 0.75, 0.24), specularity: 0.00, roughness: 0.5 };
-    // let material1 = Material::Dielectric { ior: 1.5 };
-    // world.add(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, material1));
-
-    // let material1 = Material::Diffuse { color: Color::new(0.4, 0.2, 0.1) };
-    // let material2 = Material::Dielectric { ior: 1.5 };
-
-    // world.add(Sphere::new(Point3::new(0.0, 0.8, 3.0), 1.0, material1));
-
-    // world.add(Sphere::new(Point3::new(0.0, 1.0, 2.0), 1.0, material2));
-
-    // let material3 = Material::Metal { color: Color::new(0.7, 0.6, 0.5), roughness: 0.0};
-    // let material3 = Material::Emission { color: Color::new(0.98, 0.75, 0.24), strength: 10.0};
-    // let m = Material::Glossy { color: Color::new(0.8, 0.3, 0.1), roughness: 0.0, specularity: 0.02};
-    // let e = Material::Emission { color: WHITE, strength: 1.0 };
-    // let e2 = Material::Emission { color: Color::new(0.9, 0.0, 0.0), strength: 1.0 };
-
-    // world.add(Sphere::new(Point3::new(-1.0, 1.0, 0.0), 1.0, m));
-    // world.add(Sphere::new(Point3::new(1.0, 1.0, 0.0), 1.0, e2));
-
-
-
-
-    // world.add(Sphere::new(Point3::new(0.0, 110.0, 0.0), 100.0, e));
-
-
-
-
-
-    // world.add(Triangle::new(Vec3::new(0.0, 1.0, 2.0), Vec3::new(5.0, 1.0, 2.0), Vec3::new(0.0, 5.0, 2.0)));
 
     let mut camera: Camera = Camera::new();
-    camera.image_width = 1920;
-    camera.image_height = 1080;
-    camera.samples = 100;
-    camera.ray_depth = 50;
+    camera.image_width = 800;
+    camera.image_height = 600;
+    camera.samples = 1;
+    camera.ray_depth = 2;
     camera.fov = 60.0;
-    camera.look_from = Point3::new(0.0, 6.0,15.0);
-    camera.look_at = Vec3::new(0.0, 4.0, 0.0);
-
-    // camera.look_from = Point3::new(-0.0, 1.0, 1.0);
-    // camera.look_at = Vec3::new(0.0, 1.0, -1.0);
-
-
-    // println!("World: {:?}", world.bounds());
-    // for obj in &world.list {
-        // println!("Obj: {:?}", obj.bounds());
-    // }
+    camera.look_from = Point3::new(29.0, 4.0,28.0);
+    camera.look_at = Vec3::new(0.0, -2.0, 0.0);
 
     camera.render(&world, &bvh, &primitives);
     camera.output.export(camera.samples);
 
-
-// }
-
-
-
-
-
-    // let red_diffuse = Material::Diffuse { color: () }
-
-    // let grey_diffuse = Material::Diffuse { color: Color::new(0.5,0.5,0.5) };
-    // let color_diffuse = Material::Diffuse { color: Color::new(0.7,0.3,0.3) };
-    // let white_metal: Material = Material::Metal { color: Color::new(1.0,1.0,1.0) , roughness: 0.1};
-    // let white_diffuse: Material = Material::Diffuse { color: Color::new(0.87,0.9,0.95)};
-    // let shiny_black_metal = Material::Metal { color: Color::new(0.4,0.2,0.3), roughness: 0.2 };
-    // let glass: Material = Material::Dielectric { ior: 1.5 };
-    // let red_plastic = Material::Dielectric { ior: 1.55 };
-
-    // let blue_diffuse = Material::Diffuse { color: Color::new(0.0,0.0,1.0) };
-    // world.add(Plane::new(Vec3::new(0.0, -0.5, 0.0), Vec3::new(0.0,1.0, 0.0), orange_diffuse));
-    // world.add(Plane::new(Vec3::new(0.0, -0.5, 0.0), Vec3::new(0.0,-1.0, 0.0), grey_diffuse));
-
-
-    // world.add(Plane::new(Vec3::new(1.0, 0.0, 0.0), Vec3::new(1.0,0.0, 0.0), white_metal));
-    // world.add(Plane::new(Vec3::new(-1.0, 0.0, 0.0), Vec3::new(-1.1,0.0, 0.0), white_metal));
-
-
-    // world.add(Sphere::new(Vec3::new(1.0, 0.0, 2.0), 0.5, white_metal));
-    // world.add(Sphere::new(Vec3::new(-1.0, 0.0, 2.0), 0.5, gold_metal));
-    // world.add(Sphere::new(Vec3::new(0.5, -0.5, 2.0), 0.5, gold_metal));
-
-    // world.add(Sphere::new(Vec3::new(0.0, 0.0, -2.0), 0.5, glass));
-    // world.add(Sphere::new(Vec3::new(-0.6, 0.0, -3.0), 0.5, shiny_black_metal));
-
-    
-    // world.add(Sphere::new(Vec3::new(0.5, 0.0, 2.0), -0.22, glass));
-
-    // world.add(Sphere::new(Vec3::new(-0.5, 0.00, 2.0), 0.5, white_metal));
-    // world.add(Sphere::new(Vec3::new(-0.05, 0.55, 1.75), 0.05, shiny_black_metal));
-
-    // world.add(Sphere::new(Vec3::new(-0.50, 0.50, 2.0), 0.25, gold_metal));
-
-
-    // world.add(Sphere::new(Vec3::new(0.0, -100.5, 1.0), 100.0, grey_diffuse));
-    // world.add(Sphere::new(Vec3::new(-0.5, -0.5, 2.0), 0.5, grey_diffuse));
-    // world.add(Sphere::new(Vec3::new(0.5, 0.5, 1.5), 0.5));
-
-    // let mut camera: Camera = Camera::new();
-    // camera.image_width = 1920/4;
-    // camera.image_height = 1080/4;
-    // camera.samples = 100;
-    // camera.ray_depth = 50;
-    // camera.fov = 120.0;
-    // camera.look_from = Point3::new(-0.0, 0.0, 0.25);
-    // camera.look_at = Vec3::new(0.0, 0.0, -2.0);
-
-    // camera.render(&world);
-    
    
 }

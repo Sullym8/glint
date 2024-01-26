@@ -1,4 +1,4 @@
-use crate::{material::Material, vec3::{Vec3, Point3}, sphere::Sphere, triangle::Triangle, hittable::{Record, Hittable}, ray::Ray, aabb::AABB, trimesh::TriMesh};
+use crate::{material::Material, vec3::{Vec3, Point3}, sphere::Sphere, triangle::Triangle, hittable::{Record, Hittable}, ray::Ray, aabb::AABB, mesh::TriMesh};
 
 #[derive(Clone, Copy)]
 pub enum Primitive {

@@ -19,6 +19,10 @@ pub const BLACK: Vec3 = Vec3 {
     v: [0.0;3]
 };
 
+pub const ORIGIN: Vec3 = Vec3 {
+    v: [0.0;3]
+};
+
 pub const MIN: Vec3 = Vec3 {
     v:[f64::NEG_INFINITY;3]
 };

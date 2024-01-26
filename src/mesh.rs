@@ -1,6 +1,6 @@
 use tobj::GPU_LOAD_OPTIONS;
 
-use crate::{vec3::Vec3, triangle::Triangle, aabb::{AABB, self}, hittable::{Hittable, Record}};
+use crate::{aabb::{AABB, self}, hittable::{Hittable, Record}, material::{self, Material}, triangle::Triangle, vec3::Vec3};
 
 pub struct TriMesh {
     pub triangles: Vec<Triangle>,
@@ -8,7 +8,7 @@ pub struct TriMesh {
 }
 
 impl TriMesh {
-    pub fn new(file_name: &str) -> TriMesh{
+    pub fn new(file_name: &str, material: Material) -> TriMesh{
         // let mut bounds = AABB::default();
         let obj = tobj::load_obj(file_name, &GPU_LOAD_OPTIONS);
         let (models, _) = obj.unwrap();
@@ -31,7 +31,8 @@ impl TriMesh {
                 let t = Triangle::new(
                     Vec3::newf32(p1[0], p1[1], p1[2]), 
                     Vec3::newf32(p2[0], p2[1], p2[2]), 
-                    Vec3::newf32(p3[0], p3[1], p3[2])
+                    Vec3::newf32(p3[0], p3[1], p3[2]),
+                    material
                 );
                 triangles.push(t);
                 // println!("{:?}", bounds);

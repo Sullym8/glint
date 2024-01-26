@@ -13,11 +13,7 @@ impl Color{
         let r: u32 = (f64::sqrt(self.x() / samples) * 255.0) as u32;
         let g: u32 = (f64::sqrt(self.y() / samples) * 255.0) as u32;
         let b: u32 = (f64::sqrt(self.z() / samples) * 255.0) as u32;
-
-        // r = clamp(r, 0, 255);
-        // g = clamp(r, 0, 255);
-        // b = clamp(r, 0, 255);
-        
+    
 
         writeln!(stdout(), "{} {} {}", r,g,b).ok();
     }

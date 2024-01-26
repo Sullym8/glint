@@ -1,6 +1,5 @@
-use std::{cell::RefCell, rc::Rc};
 
-use crate::{aabb::AABB, hittable2::Primitive, ray::Ray, hittable::Hittable};
+use crate::{aabb::AABB, hittable2::Primitive, ray::Ray, hittable::Record};
 
 #[derive(Debug)]
 pub struct BVHNode {
@@ -11,14 +10,14 @@ pub struct BVHNode {
     end: usize,
 }
 
+const MAX_DEPTH: i32 = 2048;
 
 impl BVHNode {
     pub fn default() -> Self {
         BVHNode { bounds: AABB::default(), left: None, right: None, start: 0, end: 0 }
     }
 
-    pub fn new(&self, primitives: &Vec<Primitive>, indices: &mut Vec<usize>, start: usize, end: usize) -> Self {
-        // println!("{start} {end}");
+    pub fn new(&self, primitives: &Vec<Primitive>, indices: &mut Vec<usize>, start: usize, end: usize, depth: i32) -> Self {
         let extent = self.bounds.max - self.bounds.min;
         let mut axis = 0;
         if extent.v[0] < extent.v[1] {
@@ -27,11 +26,7 @@ impl BVHNode {
         if extent.v[axis] < extent.v[2] {
             axis = 2;
         }
-
-        // let split = self.bounds.min.v[axis] + (extent.v[axis] * 0.5);
         let num_obj = end - start;
-        // let left: BVHNode;
-        // let right: BVHNode;
 
         match num_obj {
             1 => {
@@ -43,17 +38,30 @@ impl BVHNode {
                     start,
                     end,
                 };
-                // println!("{:?}", n);
                 return n;
             }, 
             _ => {
+                if depth == MAX_DEPTH {
+                    let mut bounds = AABB::default();
+                    for i in start..end {
+                        bounds.join(&(primitives[i]).bounds().clone());
+                    }
+                    return BVHNode {
+                        bounds,
+                        left: None,
+                        right: None,
+                        start,
+                        end
+                    }
+                }
+
                 let slice = &mut indices[start..end];
                 slice.sort_by(|a,b| {
                     (&primitives[*a].centroid().v[axis]).partial_cmp(&primitives[*b].centroid().v[axis]).unwrap()
                 });
                 let mid = (start + end) / 2;
-                let left = BVHNode::new(&self, primitives, indices, start, mid);
-                let right = BVHNode::new(&self, primitives, indices, mid, end);
+                let left = BVHNode::new(&self, primitives, indices, start, mid, depth + 1);
+                let right = BVHNode::new(&self, primitives, indices, mid, end, depth + 1);
 
                 let left_bounds = &left.bounds.clone();
                 let right_bounds = &right.bounds.clone();
@@ -81,10 +89,24 @@ impl BVHNode {
                 if !bounds.hit(ray) {
                     return None
                 } else {
-                    return primitives[*start].ray_hit(ray, t_min, t_max)
+                    let mut final_record: Option<Record> = None;
+                    for i in *start..*end {
+                        let curr = primitives[i].ray_hit(ray, t_min, t_max);
+                        match final_record {
+                            Some(record) => {
+                                match curr {
+                                    Some(c) => if c.t < record.t {final_record = Some(c)},
+                                    None => (),
+                                }
+                            },
+                            None => {final_record = curr},
+                        }
+                        
+                    }
+                    return final_record;
                 }
             },
-            BVHNode { bounds, left, right, start, end } => {
+            BVHNode { bounds, left, right, start: _, end: _ } => {
                 if !bounds.hit(ray) {
                     return None
                 } else {
@@ -110,75 +132,4 @@ impl BVHNode {
     }
 }
 
-// struct BVHTree {
-//     max_node: usize,
-//     max_depth: usize,
-//     root: RefNode,
-// }
 
-// impl BVHTree {
-//     pub fn build(world:&mut [Hittable_Enum], max_node: usize, max_depth: usize) -> Self {
-//         let mut bvh = BVHTree { max_node, max_depth, root: None };
-//         let size = world.len();
-//         bvh.root = Some(RefCell::new(Rc::new(BVHNode::new(world, 0, 0, size))));
-//         BVHTree { max_node, max_depth, root: None }
-//     }
-// }
-
-// struct BVHNode {
-//     bounds: AABB,
-//     level: usize,
-//     world: &mut Vec<Box<Hittable_Enum>>,
-//     start: usize,
-//     end: usize,
-//     left: Option<RefCell<Rc<BVHNode>>>,
-//     right: Option<RefCell<Rc<BVHNode>>>,
-// }
-
-
-
-// impl BVHNode {
-//     pub fn new(world: &mut [Hittable_Enum], level: usize, start: usize, end: usize) -> BVHNode {
-//         let mut bounds: AABB = AABB::default();
-//         let mut node:BVHNode = BVHNode { bounds, level, world, left: None, right: None, start, end};
-//         node.subdivide()
-//     }
-
-//     pub fn subdivide(mut self) -> Self {
-
-
-
-        
-
-//         while i < j {
-            
-//             // if self.list.borrow().borrow().get(i).unwrap().centroid().v[axis] < split {
-//             // if self.world.list[i].centroid().v[axis] < split {
-//             if self.world.borrow().list[i].centroid().v[axis] < split {
-
-//             // if self.world.list[i].centroid()
-//             // if self.world.list.get(i).unwrap().centroid().v[axis] < split {
-//                 i += 1;
-//             } else {
-//                 self.world.borrow_mut().list.swap(i, j);
-//             //     self.world.swap(i, j);
-//                 j -= 1;
-//             }
-//         }
-
-//         let l:BVHNode = BVHNode::new(self.world, self.level + 1, self.start, i);
-//         let r:BVHNode = BVHNode::new(self.world, self.level + 1, i, self.end);
-
-//         self.left = Some(RefCell::new(Rc::new(l)));
-
-//         // let left: BVHNode = BVHNode::new(self.world, self.level + 1, self.start, i);
-//         // let right = BVHNode::new(self.world, self.level + 1, i, self.end);
-
-//         // self.left = Some(RefCell::new(Rc::new(left)));
-//         // self.right = Some(RefCell::new(Rc::new(right)));
-        
-//         self
-//     }
-// }
-
-pub type RefNode = Option<RefCell<Rc<BVHNode>>>;
