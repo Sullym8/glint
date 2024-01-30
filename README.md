@@ -28,3 +28,6 @@
 
 ![stanford_bunny](https://github.com/Sullym8/glint/assets/48613444/fb0c64c2-cf9a-4162-b554-a56709bc7c11)
 
+![stylised](https://github.com/Sullym8/glint/assets/48613444/89365e6d-d931-491f-95fe-a07cba7d244d)
+
+![output](https://github.com/Sullym8/glint/assets/48613444/513614ff-eccc-4263-bbce-65398ba1b053)
