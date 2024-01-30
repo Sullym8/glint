@@ -3,7 +3,7 @@
 ![output](https://github.com/Sullym8/glint/assets/48613444/fd78f8a8-f72b-416e-a6c7-58fd79cd730f)
 ![finl](https://github.com/Sullym8/glint/assets/48613444/342190df-8239-4daf-8b68-3f3bea71c3b7)
 
-Glint is a hobby Pathtracer written in Rust that implements a few modern features. I mainly built this to learn Rust and it should evolve as my understanding of Rust grows :)
+Glint is a hobby Pathtracer written in Rust that implements a few modern features. I built this over Winter 2023 to learn the Rust Language, and it should evolve as my understanding of Rust grows :)
 
 ## Features
 - Wavefront rendering
