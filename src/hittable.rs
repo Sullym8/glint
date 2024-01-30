@@ -9,6 +9,8 @@ pub struct Record{
     pub normal: Vec3,
     pub outside_face: bool,
     pub material: Material,
+    pub u: Option<f64>,
+    pub v: Option<f64>
 }
 
 pub struct HittableVec {
@@ -126,7 +128,9 @@ impl Record{
             point: Vec3::new(0.0,0.0,0.0),
             normal: Vec3::new(0.0,0.0,0.0),
             outside_face: true,
-            material: Material::Empty
+            material: Material::Empty,
+            u: None,
+            v: None
         }
     }
 

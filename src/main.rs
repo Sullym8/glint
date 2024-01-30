@@ -21,7 +21,7 @@ use sphere::Sphere;
 use mesh::TriMesh;
 use vec3::{Point3, WHITE};
 
-use crate::{vec3::Vec3, hittable::HittableVec, bvh::BVHNode, hittable2::Primitive};
+use crate::{vec3::{Vec3, BLACK}, hittable::HittableVec, bvh::BVHNode, hittable2::Primitive};
 
 // where the raytracing appens
 
@@ -32,9 +32,10 @@ fn main() {
     let mut world: HittableVec = HittableVec::new();
 
 
-    let ground_material = Material::Diffuse { color: Color::new(0.98, 0.75, 0.24)};
+    // let ground_material = Material::Metal { color: Color::new(0.98, 0.75, 0.24), roughness: 0.0};
+    let ground_material = Material::Glossy { color: Color::new(1.0, 0.3, 0.2), specularity: 0.15, roughness: 0.3};
 
-    let m = TriMesh::new("bunny.obj", Material::Metal { color: WHITE, roughness: 0.5 });
+    let m = TriMesh::new("helmet.obj", Material::Glossy { color: WHITE, roughness: 0.0, specularity: 0.02});
 
     let mut primitives: Vec<Primitive> = vec![];
     let mut i: usize = 0;
@@ -52,25 +53,25 @@ fn main() {
         i += 1;
     }
 
-    primitives.push(Primitive::Sphere(
-        Sphere::new(
-            Point3::new(0.0, -999.6, 0.0), 
-            1000.0, 
-            ground_material
-        )
-    ));
-    indices.push(i);
-    i+= 1;
+    // primitives.push(Primitive::Sphere(
+    //     Sphere::new(
+    //         Point3::new(0.0, -50.0, 0.0), 
+    //         50.0, 
+    //         ground_material
+    //     )
+    // ));
+    // indices.push(i);
+    // i+= 1;
 
-    primitives.push(Primitive::Sphere(
-        Sphere::new(
-            Point3::new(0.0, 120.0, 0.0), 
-            100.0, 
-            Material::Emission { color: WHITE, strength: 1.0 }
-        )
-    ));
-    indices.push(i);
-    i+= 1;
+    // primitives.push(Primitive::Sphere(
+    //     Sphere::new(
+    //         Point3::new(0.0, 1100.0, 0.0), 
+    //         1000.0, 
+    //         Material::Emission { color: WHITE, strength: 1.0 }
+    //     )
+    // ));
+    // indices.push(i);
+    // i+= 1;
 
 
     // primitives.push(Primitive::Sphere(
@@ -87,17 +88,23 @@ fn main() {
 
     let mut bvh = BVHNode::default();
     println!("Building BVH...");
-    bvh = bvh.new(&primitives, &mut indices, 0, i, 0);
+    bvh = bvh.new(&primitives, &mut indices, 0, i, 1024);
     println!("BVH Built");
 
     let mut camera: Camera = Camera::new();
-    camera.image_width = 800;
-    camera.image_height = 600;
-    camera.samples = 1;
-    camera.ray_depth = 2;
-    camera.fov = 60.0;
-    camera.look_from = Point3::new(29.0, 4.0,28.0);
-    camera.look_at = Vec3::new(0.0, -2.0, 0.0);
+    camera.image_width = 1920;
+    camera.image_height = 1080;
+    camera.samples = 256;
+    camera.ray_depth = 5;
+    camera.fov = 35.0;
+    camera.look_from = Point3::new(60.0, 50.0,80.0);
+    camera.look_at = Vec3::new(0.0, 25.0, 0.0);
+
+    camera.look_from = Point3::new(16.0, 6.0,18.0);
+    camera.look_at = Vec3::new(0.0, 1.5, 0.0);
+
+    camera.look_from = Point3::new(-1.4, -0.3,9.0);
+    camera.look_at = Vec3::new(-1.4, -0.3, 0.0);
 
     camera.render(&world, &bvh, &primitives);
     camera.output.export(camera.samples);

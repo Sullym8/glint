@@ -1,6 +1,6 @@
 use tobj::GPU_LOAD_OPTIONS;
 
-use crate::{aabb::{AABB, self}, hittable::{Hittable, Record}, material::{self, Material}, triangle::Triangle, vec3::Vec3};
+use crate::{aabb::{AABB, self}, color::Color, hittable::{Hittable, Record}, material::{self, Material}, triangle::Triangle, vec3::Vec3};
 
 pub struct TriMesh {
     pub triangles: Vec<Triangle>,
@@ -9,33 +9,59 @@ pub struct TriMesh {
 
 impl TriMesh {
     pub fn new(file_name: &str, material: Material) -> TriMesh{
-        // let mut bounds = AABB::default();
         let obj = tobj::load_obj(file_name, &GPU_LOAD_OPTIONS);
-        let (models, _) = obj.unwrap();
+        let (models, mats) = obj.unwrap();
+        let materials = mats.unwrap();
 
         let mut triangles: Vec<Triangle> = Vec::new();
         for model in models {
-            // println!("{:?}", model.mesh);
+            let mat = match model.mesh.material_id {
+                Some(id) => match (materials[id].diffuse, &materials[id].name) {
+                    (Some([r,g,b]), name) => {
+                        println!("{name}");
+                        if name.starts_with("d") {
+                            Material::Diffuse { color: Color::newf32(r, g, b) }
+                        } else if name.starts_with("g") {
+                            Material::Glossy { color: Color::newf32(r, g, b), specularity: 0.15, roughness: 0.0 }
+                        } else if name.starts_with("e") {
+                            Material::Emission { color: Color::newf32(r, g, b), strength: 5.0 }
+                        } else {
+                            Material::Empty
+                        }
+                    },
+                    _ => Material::Empty
+                }
+                None => Material::Empty
+            };
+
             for i in (0..model.mesh.indices.len()).step_by(3) {
                 // println!("{} {} {}", model.mesh.indices[i], model.mesh.indices[i + 1], model.mesh.indices[i + 2])
                 let f1 = model.mesh.indices[i] as usize;
                 let f2 = model.mesh.indices[i + 1] as usize;
                 let f3 = model.mesh.indices[i + 2] as usize;
 
-                let p1 = &model.mesh.positions[3* f1..3 * f1+3];
+                let p1 = &model.mesh.positions[3 * f1..3 * f1+3];
                 let p2 = &model.mesh.positions[3 * f2..3 * f2+3];
                 let p3 = &model.mesh.positions[3 * f3..3 * f3+3];
 
-                // println!("{:?} {:?} {:?}", p1, p2, p3);
+                let n1 = &model.mesh.normals[3 * f1..3 * f1+3];
+                let n2 = &model.mesh.normals[3 * f2..3 * f2+3];
+                let n3 = &model.mesh.normals[3 * f3..3 * f3+3];
 
-                let t = Triangle::new(
+                let mut t = Triangle::new(
                     Vec3::newf32(p1[0], p1[1], p1[2]), 
                     Vec3::newf32(p2[0], p2[1], p2[2]), 
                     Vec3::newf32(p3[0], p3[1], p3[2]),
-                    material
+                    // Material::Diffuse { color: color }
+                    // Material::Metal { color: color, roughness: 0.0 }
+                    // Material::Glossy { color: color, specularity: 0.15, roughness: 0.0 }
+                    mat
                 );
+                t.n1 = Some(Vec3::newf32(n1[0], n1[1], n1[2]));
+                t.n2 = Some(Vec3::newf32(n2[0], n2[1], n2[2]));
+                t.n3 = Some(Vec3::newf32(n3[0], n3[1], n3[2]));
+                // println!("{:?}", t);
                 triangles.push(t);
-                // println!("{:?}", bounds);
             }
         }
 

@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
-use crate::{hittable::{HittableVec, Hittable}, vec3::{Point3, Vec3}, ray::Ray, color::Color, util::gen_random, image::Image, hittable2::Primitive, bvh::BVHNode};
+use crate::{hittable::{HittableVec, Hittable}, vec3::{Point3, Vec3, WHITE}, ray::Ray, color::Color, util::gen_random, image::Image, hittable2::Primitive, bvh::BVHNode};
 
 pub struct Camera {
     pub image_width: i32,
@@ -280,11 +280,15 @@ impl Camera {
                 }
             },
             None => {
+                // return Color::new(1.0, 0.4, 0.3);
+                // return Color::new(0.1, 0.1, 0.1);
                 return Color::default();
                 let unit: Vec3 = r.direction().unit();
                 let a = (unit.y() + 1.0) * 0.5;
                 //lerp between Blue and White to create sky
-                (1.0 - a) * Color::new(1.0,1.0,1.0) + a * Color::new(0.5, 0.7,  1.0)
+                // (1.0 - a) * Color::new(1.0,1.0,1.0) + a * Color::new(0.5, 0.7,  1.0)
+                // (1.0 - a) * Color::new(0.98,0.38,0.0) + a * Color::new(0.62, 0.54,  0.77)
+
 
             }
         }
