@@ -1,7 +1,7 @@
 # Glint ✨ - A Rust Pathtracer
 
 ![output](https://github.com/Sullym8/glint/assets/48613444/fd78f8a8-f72b-416e-a6c7-58fd79cd730f)
-![finl](https://github.com/Sullym8/glint/assets/48613444/342190df-8239-4daf-8b68-3f3bea71c3b7)
+![output](https://github.com/Sullym8/glint/assets/48613444/39bfc452-05cf-4820-93d7-e4144ceddb4e)
 
 Glint is a hobby Pathtracer written in Rust that implements a few modern features. I built this over Winter 2023 to learn the Rust Language, and it should evolve as my understanding of Rust grows :)
 
@@ -34,7 +34,7 @@ Glint is a hobby Pathtracer written in Rust that implements a few modern feature
 
 ## Screenshots
 ![stylised](https://github.com/Sullym8/glint/assets/48613444/bcc2b28a-4fde-4fab-beca-e6ee89901bac)
-![output](https://github.com/Sullym8/glint/assets/48613444/39bfc452-05cf-4820-93d7-e4144ceddb4e)
+![finl](https://github.com/Sullym8/glint/assets/48613444/342190df-8239-4daf-8b68-3f3bea71c3b7)
 ![glass_trooper](https://github.com/Sullym8/glint/assets/48613444/81434c1b-3236-4a50-b2ad-cbc49161074d)
 ![lightball](https://github.com/Sullym8/glint/assets/48613444/43c57f3d-c77c-4e56-b027-b7a500b189c1)
 
