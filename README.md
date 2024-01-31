@@ -27,6 +27,7 @@ Glint is a hobby Pathtracer written in Rust that implements a few modern feature
 
 ### Todo
 - [ ] Camera Depth of Field
+- [ ] Textured Materials
 - [ ] Object Transformations
 - [ ] Import scene from YAML/TOML
 - [ ] A better Glossy Shader
