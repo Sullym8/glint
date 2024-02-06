@@ -126,6 +126,20 @@ impl Vec3 {
         }
     }
 
+    pub fn vec_in_unit_disk() -> Vec3 {
+        loop {
+            let vec = Vec3 { v: [
+                gen_random_range(-1.0, 1.0),
+                gen_random_range(-1.0, 1.0),
+                0.0
+            ]};
+
+            if vec.length() < 1.0 {
+                return vec
+            } 
+        }
+    }
+
     // reflected ray = v + 2*h
     // v.n = v*n*cos(theta)
     // h = -vcos(theta)

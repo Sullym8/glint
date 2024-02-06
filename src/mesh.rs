@@ -22,9 +22,13 @@ impl TriMesh {
                         if name.starts_with("d") {
                             Material::Diffuse { color: Color::newf32(r, g, b) }
                         } else if name.starts_with("g") {
-                            Material::Glossy { color: Color::newf32(r, g, b), specularity: 0.15, roughness: 0.0 }
+                            Material::Glossy { color: Color::newf32(r, g, b), specularity: 0.02, roughness: 0.0 }
                         } else if name.starts_with("e") {
-                            Material::Emission { color: Color::newf32(r, g, b), strength: 5.0 }
+                            Material::Emission { color: Color::newf32(r, g, b), strength: 2.0 }
+                        } else if name.starts_with("m") {
+                            Material::Metal { color: Color::newf32(r, g, b), roughness: 0.3 }
+                        } else if name.starts_with("t") {
+                            Material::Dielectric { color: Color::newf32(r, g, b), ior: 1.5 }
                         } else {
                             Material::Empty
                         }

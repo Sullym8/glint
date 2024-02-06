@@ -35,7 +35,7 @@ fn main() {
     // let ground_material = Material::Metal { color: Color::new(0.98, 0.75, 0.24), roughness: 0.0};
     let ground_material = Material::Glossy { color: Color::new(1.0, 0.3, 0.2), specularity: 0.15, roughness: 0.3};
 
-    let m = TriMesh::new("helmet.obj", Material::Glossy { color: WHITE, roughness: 0.0, specularity: 0.02});
+    let m = TriMesh::new("car.obj", Material::Glossy { color: WHITE, roughness: 0.0, specularity: 0.02});
 
     let mut primitives: Vec<Primitive> = vec![];
     let mut i: usize = 0;
@@ -92,19 +92,30 @@ fn main() {
     println!("BVH Built");
 
     let mut camera: Camera = Camera::new();
-    camera.image_width = 1920;
-    camera.image_height = 1080;
-    camera.samples = 256;
+    camera.image_width = 1280;
+    camera.image_height = 720;
+    camera.samples = 100;
     camera.ray_depth = 5;
     camera.fov = 35.0;
-    camera.look_from = Point3::new(60.0, 50.0,80.0);
-    camera.look_at = Vec3::new(0.0, 25.0, 0.0);
+    // camera.look_from = Point3::new(60.0, 48.0,80.0);
+    // camera.look_at = Vec3::new(0.0, 23.0, 0.0);
 
-    camera.look_from = Point3::new(16.0, 6.0,18.0);
-    camera.look_at = Vec3::new(0.0, 1.5, 0.0);
+    // camera.look_from = Point3::new(16.0, 6.0,18.0);
+    // camera.look_at = Vec3::new(0.0, 1.5, 0.0);
 
-    camera.look_from = Point3::new(-1.4, -0.3,9.0);
-    camera.look_at = Vec3::new(-1.4, -0.3, 0.0);
+    // camera.look_from = Point3::new(-1.4, -0.3,9.0);
+    // camera.look_at = Vec3::new(-1.4, -0.3, 0.0);
+
+    // camera.look_from = Point3::new(4.0, 1.5,15.3);
+    camera.look_from = Point3::new(4.67,0.77,15.2);
+    camera.look_at = Vec3::new(0.34, 1.42, 7.78);
+
+    // camera.look_at = Vec3::new(-3.0, 1.65, 1.92);
+
+    camera.defocus_angle = 2.0;
+    camera.focus_dist = 8.5;
+
+
 
     camera.render(&world, &bvh, &primitives);
     camera.output.export(camera.samples);

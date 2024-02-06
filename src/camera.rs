@@ -16,6 +16,10 @@ pub struct Camera {
     pub fov: f64,
     pub look_at: Point3,
     pub look_from: Point3,
+    pub defocus_angle: f64,
+    pub focus_dist: f64,
+    defocus_disk_u: Vec3,
+    defocus_disk_v: Vec3,
     v_up: Vec3,
     pub output: Image,
 }
@@ -35,6 +39,10 @@ impl Camera {
             fov: 60.0,
             look_at: Point3::new(0.0, 0.0, -1.0),
             look_from: Point3::default(),
+            defocus_angle: 0.0,
+            focus_dist: 10.0,
+            defocus_disk_u: Vec3::default(),
+            defocus_disk_v: Vec3::default(),
             v_up: Vec3::new(0.0, 1.0, 0.0),
             output: Image::new(4, 4, vec![])
         }
@@ -152,7 +160,18 @@ impl Camera {
         let pixel_vec = self.upper_left_pixel + (i as f64 * self.del_h) + (j as f64 * self.del_w);
         let pixel_sample = pixel_vec + self.del_h * (gen_random() - 0.5) + self.del_w * (gen_random() - 0.5);
 
-        Ray::new(self.camera_center, pixel_sample - self.camera_center)
+        let ray_origin = if self.defocus_angle <= 0.0 {
+            self.camera_center
+        } else {
+            self.defocus_disk_sample()
+        };
+
+        Ray::new(ray_origin, pixel_sample - ray_origin)
+    }
+
+    fn defocus_disk_sample(&self) -> Vec3 {
+        let v = Vec3::vec_in_unit_disk();
+        self.camera_center + (v.x() * self.defocus_disk_u) + (v.y() * self.defocus_disk_v)
     }
 
     fn init(&mut self) {
@@ -162,7 +181,7 @@ impl Camera {
         let focal_length = (self.look_from-self.look_at).length();
         let h = f64::tan(f64::to_radians(self.fov * 0.5));
 
-        let viewport_width: f64 = 2.0 * focal_length * h;
+        let viewport_width: f64 = 2.0 * self.focus_dist * h;
         let viewport_height: f64 = viewport_width / (self.image_width as f64/ self.image_height as f64);
 
 
@@ -186,10 +205,14 @@ impl Camera {
         self.del_h = v_h/(self.image_height as f64);
 
         //Scanning accross the viewport begins from the top left.
-        let camera_upper_left= self.camera_center - (focal_length * z) - v_w/2.0 - v_h/2.0;
+        let camera_upper_left= self.camera_center - (self.focus_dist * z) - v_w/2.0 - v_h/2.0;
         self.upper_left_pixel = camera_upper_left + self.del_w/2.0 + self.del_h/2.0;
 
         // self.output = Image::new(self.image_height as u32, self.image_width as u32);
+
+        let defocus_radius = self.focus_dist * f64::tan(f64::to_radians(self.defocus_angle / 2.0));
+        self.defocus_disk_u = x * defocus_radius;
+        self.defocus_disk_v = y * defocus_radius; 
 
         eprintln!("Viewport: {}x{}", viewport_width, viewport_height);
     }
@@ -286,7 +309,7 @@ impl Camera {
                 let unit: Vec3 = r.direction().unit();
                 let a = (unit.y() + 1.0) * 0.5;
                 //lerp between Blue and White to create sky
-                // (1.0 - a) * Color::new(1.0,1.0,1.0) + a * Color::new(0.5, 0.7,  1.0)
+                (1.0 - a) * Color::new(1.0,1.0,1.0) + a * Color::new(0.5, 0.7,  1.0)
                 // (1.0 - a) * Color::new(0.98,0.38,0.0) + a * Color::new(0.62, 0.54,  0.77)
 
 
