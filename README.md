@@ -22,11 +22,12 @@ Glint is a hobby Pathtracer written in Rust that implements a few modern feature
 - Positionable and configurable Camera
   - LookFrom and LookAt
   - FOV
+  - Configurable DOF
   - Image Dimensions
 - Sphere and Triangle primitive types
 
 ### Todo
-- [ ] Camera Depth of Field
+- [x] Camera Depth of Field
 - [ ] Textured Materials
 - [ ] Object Transformations
 - [ ] Import scene from YAML/TOML
